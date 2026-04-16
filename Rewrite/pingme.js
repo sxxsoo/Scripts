@@ -155,6 +155,8 @@ function notifyDone(title, body) {
   $notify(scriptName, title, body);
 }
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 if (typeof $request !== 'undefined' && $request) {
   const capture = {
     url: $request.url,
@@ -307,7 +309,7 @@ if (typeof $request !== 'undefined' && $request) {
           } catch (e) {
             msgs.push('❌ 查询：解析失败');
           }
-          return fetchApi('checkIn');
+          return sleep(2000).then(() => fetchApi('checkIn'));
         }).then(res => {
           try {
             const d = JSON.parse(res.body);
@@ -316,9 +318,9 @@ if (typeof $request !== 'undefined' && $request) {
           } catch (e) {
             msgs.push('❌ 签到：解析失败');
           }
-          return doVideoLoop(MAX_VIDEO);
+          return sleep(3000).then(() => doVideoLoop(MAX_VIDEO));
         }).then(() => {
-          return fetchApi('queryBalanceAndBonus');
+          return sleep(2000).then(() => fetchApi('queryBalanceAndBonus'));
         }).then(res => {
           try {
             const d = JSON.parse(res.body);
@@ -342,7 +344,7 @@ if (typeof $request !== 'undefined' && $request) {
     for (let i = 0; i < accounts.length; i++) {
       p = p.then(() => runAccount(accounts[i], i));
       if (i < accounts.length - 1) {
-        p = p.then(() => new Promise(r => setTimeout(r, 5000)));
+        p = p.then(() => new Promise(r => setTimeout(r, 15000 + Math.floor(Math.random() * 10000))));
       }
     }
 
