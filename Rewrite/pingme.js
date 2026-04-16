@@ -2,12 +2,13 @@
 /*
 @Name：PingMe 自动化签到+视频奖励
 @Author：怎么肥事
+@Modified by：@sxxsoo (诠释并补充了多账号支持内容)
 
 [rewrite_local]
-^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus url script-request-header https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js
+^https:\/\/api\.pingmeapp\.net\/app\/queryBalanceAndBonus url script-request-header https://raw.githubusercontent.com/sxxsoo/Scripts/refs/heads/main/Rewrite/pingme.js
 
 [task_local]
-30 8,20 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js, tag=PingMe签到, enabled=true
+30 8,20 * * * https://raw.githubusercontent.com/sxxsoo/Scripts/refs/heads/main/Rewrite/pingme.js, tag=PingMe签到, enabled=true
 
 [MITM]
 hostname = api.pingmeapp.net
