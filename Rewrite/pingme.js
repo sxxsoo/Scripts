@@ -171,8 +171,26 @@ if (typeof $request !== 'undefined' && $request) {
     } catch (e) {}
   }
 
+  const getStaticStr = (p) => {
+    if (p.userId) return String(p.userId);
+    if (p.uid) return String(p.uid);
+    if (p.token) return String(p.token);
+    const ignored = ['sign', 'signDate', 'timestamp', 'ts', '_', 'nonce', 'reqId', 'request_id', 'time', 'currentTime'];
+    return Object.keys(p).filter(k => !ignored.includes(k)).sort().map(k => p[k]).join('|');
+  };
+
+  let uniqueAccounts = [];
+  let seen = new Set();
+  for (let i = accounts.length - 1; i >= 0; i--) {
+    let s = getStaticStr(accounts[i].paramsRaw);
+    if (!seen.has(s)) {
+      seen.add(s);
+      uniqueAccounts.unshift(accounts[i]);
+    }
+  }
+  accounts = uniqueAccounts;
+
   let foundIndex = -1;
-  const getStaticStr = (p) => Object.keys(p).filter(k => k !== 'sign' && k !== 'signDate').sort().map(k => p[k]).join('|');
   const curStatic = getStaticStr(capture.paramsRaw);
   
   for (let i = 0; i < accounts.length; i++) {
@@ -210,6 +228,26 @@ if (typeof $request !== 'undefined' && $request) {
       $done();
       return;
     }
+
+    const getStaticStr = (p) => {
+      if (p.userId) return String(p.userId);
+      if (p.uid) return String(p.uid);
+      if (p.token) return String(p.token);
+      const ignored = ['sign', 'signDate', 'timestamp', 'ts', '_', 'nonce', 'reqId', 'request_id', 'time', 'currentTime'];
+      return Object.keys(p).filter(k => !ignored.includes(k)).sort().map(k => p[k]).join('|');
+    };
+
+    let uniqueAccounts = [];
+    let seen = new Set();
+    for (let i = accounts.length - 1; i >= 0; i--) {
+      let s = getStaticStr(accounts[i].paramsRaw);
+      if (!seen.has(s)) {
+        seen.add(s);
+        uniqueAccounts.unshift(accounts[i]);
+      }
+    }
+    accounts = uniqueAccounts;
+    $prefs.setValueForKey(JSON.stringify(accounts), ckKey);
 
     if (accounts.length === 0) {
       notifyDone('⚠️ 账号列表为空', '请重新打开 PingMe 抓参');
@@ -303,6 +341,9 @@ if (typeof $request !== 'undefined' && $request) {
     let p = Promise.resolve();
     for (let i = 0; i < accounts.length; i++) {
       p = p.then(() => runAccount(accounts[i], i));
+      if (i < accounts.length - 1) {
+        p = p.then(() => new Promise(r => setTimeout(r, 5000)));
+      }
     }
 
     p.then(() => {
