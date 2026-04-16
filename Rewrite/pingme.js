@@ -197,6 +197,7 @@ if (typeof $request !== 'undefined' && $request) {
   const raw = $prefs.valueForKey(ckKey);
   if (!raw) {
     notifyDone('⚠️ 未抓到参数', '先打开 PingMe 触发一次 ');
+    console.log(`【${scriptName}】⚠️ 未抓到参数，先打开 PingMe 触发一次`);
     $done();
   } else {
     let accounts = [];
@@ -205,12 +206,14 @@ if (typeof $request !== 'undefined' && $request) {
       accounts = Array.isArray(parsed) ? parsed : [parsed];
     } catch (e) {
       notifyDone('⚠️ 参数损坏', '请重新打开 PingMe 抓参');
+      console.log(`【${scriptName}】⚠️ 参数损坏，请重新打开 PingMe 抓参`);
       $done();
       return;
     }
 
     if (accounts.length === 0) {
       notifyDone('⚠️ 账号列表为空', '请重新打开 PingMe 抓参');
+      console.log(`【${scriptName}】⚠️ 账号列表为空，请重新打开 PingMe 抓参`);
       $done();
       return;
     }
@@ -283,11 +286,15 @@ if (typeof $request !== 'undefined' && $request) {
             const d = JSON.parse(res.body);
             if (d.retcode === 0) msgs.push(`💰 最新余额：${d.result.balance} Coins`);
           } catch (e) {}
-          allMsgs.push(msgs.join('\n'));
+          const accountLog = msgs.join('\n');
+          console.log(`【${scriptName}】账号 ${index + 1} 执行完毕:\n${accountLog}`);
+          allMsgs.push(accountLog);
           resolve();
         }).catch(err => {
           msgs.push(`❌ 任务失败: ${err.error || String(err)}`);
-          allMsgs.push(msgs.join('\n'));
+          const accountLog = msgs.join('\n');
+          console.log(`【${scriptName}】账号 ${index + 1} 执行完毕:\n${accountLog}`);
+          allMsgs.push(accountLog);
           resolve();
         });
       });
@@ -299,7 +306,9 @@ if (typeof $request !== 'undefined' && $request) {
     }
 
     p.then(() => {
-      notifyDone(`🎉 任务完成 (${accounts.length}个账号)`, allMsgs.join('\n\n'));
+      const finalLog = allMsgs.join('\n\n');
+      console.log(`【${scriptName}】所有账号任务完成:\n${finalLog}`);
+      notifyDone(`🎉 任务完成 (${accounts.length}个账号)`, finalLog);
       $done();
     });
   }
