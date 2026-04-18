@@ -3,7 +3,7 @@
 ^https:\/\/iios-api\.suil\.dpdns\.org\/iios\/.* url script-request-header https://raw.githubusercontent.com/sxxsoo/Scripts/refs/heads/main/Rewrite/iios.js
 
 [task_local]
-30 8,20 * * * https://raw.githubusercontent.com/sxxsoo/Scripts/refs/heads/main/Rewrite/iios.js, tag=iios签到, enabled=true
+30 8 * * * https://raw.githubusercontent.com/sxxsoo/Scripts/refs/heads/main/Rewrite/iios.js, tag=iios签到, enabled=true
 
 [MITM]
 hostname = iios-api.suil.dpdns.org
